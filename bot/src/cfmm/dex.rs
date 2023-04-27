@@ -141,7 +141,7 @@ pub async fn sync_dex(
             Err(join_error) => return Err(PairSyncError::JoinError(join_error)),
         }
     }
-
+    log::info!("aggregated_pools {:?}", aggregated_pools);
     // return the populated aggregated pools vec
     Ok(aggregated_pools)
 }
@@ -203,7 +203,10 @@ async fn get_all_pools(
             // for each pair created log, create a new Pair type and add it to the pairs vec
             for log in logs {
                 match dex.new_pool_from_event(log, provider.clone()) {
-                    Some(pool) => pools.push(pool),
+                    Some(pool) => {
+                        // log::info!("pool event : {:?}", pool);
+                        pools.push(pool)
+                    },
                     None => continue,
                 }
             }

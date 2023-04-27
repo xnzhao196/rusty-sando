@@ -26,6 +26,7 @@ pub struct Bot {
     sandwich_state: Arc<BotState>,
     latest_block_oracle: Arc<RwLock<BlockOracle>>,
     client: Arc<Provider<Ws>>,
+    quick_client: Arc<Provider<Ws>>,
     all_pools: Arc<DashMap<Address, Pool>>,
     sandwich_maker: Arc<SandwichMaker>,
     bundle_sender: Arc<RwLock<BundleSender>>,
@@ -44,6 +45,7 @@ impl Bot {
     // * Err(eyre::Error) if not successful
     pub async fn new(
         client: Arc<Provider<Ws>>,
+        quick_client: Arc<Provider<Ws>>,
         pool_vec: Vec<Pool>,
         dexes: Vec<Dex>,
     ) -> Result<Bot> {
@@ -68,6 +70,7 @@ impl Bot {
 
         Ok(Bot {
             client,
+            quick_client,
             all_pools,
             latest_block_oracle,
             sandwich_state,
@@ -120,7 +123,7 @@ impl Bot {
             if victim_tx.max_fee_per_gas.unwrap_or(U256::zero()) < block_oracle.next_block.base_fee
             {
                 log::info!("{}", format!("{:?} mf<nbf", victim_tx.hash).cyan());
-                continue;
+                // continue;
             }
 
             // recover from field from vrs (ECDSA)
@@ -137,12 +140,13 @@ impl Bot {
 
             // get all state diffs that this tx produces
             let state_diffs = if let Some(sd) = utils::state_diff::get_from_txs(
-                &self.client,
+                &self.quick_client,
                 &vec![victim_tx.clone()],
                 BlockNumber::Number(block_oracle.latest_block.number),
             )
             .await
             {
+                log::info!("will go down , sd {:?}", sd);
                 sd
             } else {
                 log::info!("{:?}", victim_tx.hash);

@@ -71,6 +71,15 @@ pub async fn get_ws_provider() -> Provider<Ws> {
         .expect("RPC Connection Error")
 }
 
+/// Return a new quick node ws provider
+pub async fn get_quick_node_ws_provider() -> Provider<Ws> {
+    let url =
+        dotenv::var("QUICK_NODE_URL_WSS").expect("Required environment variable \"QUICK_NODE_URL_WSS\" not set");
+    Provider::<Ws>::connect(&url)
+        .await
+        .expect("RPC Connection Error")
+}
+
 /// Return a webhook for v2 discord alert channel
 pub fn get_v2_alert_webhook() -> String {
     dotenv::var("V2_ALERT_DISCORD_WEBHOOK")

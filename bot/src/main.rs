@@ -65,56 +65,58 @@ async fn main() -> Result<()> {
         10000835,
     ));
 
-    //// Add Sushiswap pairs
-    dexes.push(Dex::new(
-        H160::from_str("0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac").unwrap(),
-        PoolVariant::UniswapV2,
-        10794229,
-    ));
-
-    //// Add CryptoCom-Swap pairs
-    dexes.push(Dex::new(
-        H160::from_str("0x9DEB29c9a4c7A88a3C0257393b7f3335338D9A9D").unwrap(),
-        PoolVariant::UniswapV2,
-        10828414,
-    ));
-
-    //// Add Convergence-Swap pairs
-    dexes.push(Dex::new(
-        H160::from_str("0x4eef5746ED22A2fD368629C1852365bf5dcb79f1").unwrap(),
-        PoolVariant::UniswapV2,
-        12385067,
-    ));
-
-    //// Add Pancake-Swap pairs
-    dexes.push(Dex::new(
-        H160::from_str("0x1097053Fd2ea711dad45caCcc45EfF7548fCB362").unwrap(),
-        PoolVariant::UniswapV2,
-        15614590,
-    ));
-
-    //// Add Shiba-Swap pairs, home of shitcoins
-    dexes.push(Dex::new(
-        H160::from_str("0x115934131916C8b277DD010Ee02de363c09d037c").unwrap(),
-        PoolVariant::UniswapV2,
-        12771526,
-    ));
-
-    //// Add Saitaswap pools
-    dexes.push(Dex::new(
-        H160::from_str("0x35113a300ca0D7621374890ABFEAC30E88f214b1").unwrap(),
-        PoolVariant::UniswapV2,
-        15210780,
-    ));
-
-    //// Add UniswapV3 pools
-    dexes.push(Dex::new(
-        H160::from_str("0x1F98431c8aD98523631AE4a59f267346ea31F984").unwrap(),
-        PoolVariant::UniswapV3,
-        12369621,
-    ));
+    // //// Add Sushiswap pairs
+    // dexes.push(Dex::new(
+    //     H160::from_str("0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     10794229,
+    // ));
+    //
+    // //// Add CryptoCom-Swap pairs
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x9DEB29c9a4c7A88a3C0257393b7f3335338D9A9D").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     10828414,
+    // ));
+    //
+    // //// Add Convergence-Swap pairs
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x4eef5746ED22A2fD368629C1852365bf5dcb79f1").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     12385067,
+    // ));
+    //
+    // //// Add Pancake-Swap pairs
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x1097053Fd2ea711dad45caCcc45EfF7548fCB362").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     15614590,
+    // ));
+    //
+    // //// Add Shiba-Swap pairs, home of shitcoins
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x115934131916C8b277DD010Ee02de363c09d037c").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     12771526,
+    // ));
+    //
+    // //// Add Saitaswap pools
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x35113a300ca0D7621374890ABFEAC30E88f214b1").unwrap(),
+    //     PoolVariant::UniswapV2,
+    //     15210780,
+    // ));
+    //
+    // //// Add UniswapV3 pools
+    // dexes.push(Dex::new(
+    //     H160::from_str("0x1F98431c8aD98523631AE4a59f267346ea31F984").unwrap(),
+    //     PoolVariant::UniswapV3,
+    //     12369621,
+    // ));
 
     let current_block = client.get_block_number().await.unwrap();
+    log::info!("current_block: {}", current_block);
+    // Some(BlockNumber::Number(current_block))
     let all_pools = sync_dex(dexes.clone(), &client, current_block, None)
         .await
         .unwrap();
@@ -124,11 +126,12 @@ async fn main() -> Result<()> {
     // Execution loop (reconnect bot if it dies)
     loop {
         let client = utils::create_websocket_client().await.unwrap();
-        let mut bot = Bot::new(client, all_pools.clone(), dexes.clone())
+        let quick_client = utils::create_quicknode_websocket_client().await.unwrap();
+        let mut bot = Bot::new(client, quick_client, all_pools.clone(), dexes.clone())
             .await
             .unwrap();
 
-        bot.run().await.unwrap();
+        // bot.run().await.unwrap();
         log::error!("Websocket disconnected");
     }
 }

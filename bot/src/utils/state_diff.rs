@@ -50,8 +50,12 @@ pub async fn get_from_txs(
         .collect();
 
     let block_traces = match client.trace_call_many(req, Some(block_num)).await {
-        Ok(x) => x,
-        Err(_) => {
+        Ok(x) => {
+            log::info!("get trace {:?}", x);
+            x
+        },
+        Err(e) => {
+            log::info!(" provider err: {:?}", e);
             // should throw error here but guess None also works :<
             return None;
         }

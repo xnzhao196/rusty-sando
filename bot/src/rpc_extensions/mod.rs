@@ -8,5 +8,5 @@ pub async fn subscribe_pending_txs_with_body(
 ) -> Result<SubscriptionStream<'_, Ws, Transaction>, ProviderError>
 {
     // this rpc is erigon specific
-    client.subscribe(["newPendingTransactionsWithBody"]).await
+    client.subscribe(["alchemy_newFullPendingTransactions"]).await
 }

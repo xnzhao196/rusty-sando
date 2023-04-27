@@ -70,6 +70,12 @@ pub async fn create_websocket_client() -> eyre::Result<Arc<Provider<Ws>>> {
     Ok(Arc::new(client))
 }
 
+/// Create Websocket Client
+pub async fn create_quicknode_websocket_client() -> eyre::Result<Arc<Provider<Ws>>> {
+    let client = dotenv::get_quick_node_ws_provider().await;
+    Ok(Arc::new(client))
+}
+
 pub async fn get_nonce(
     client: &Arc<Provider<Ws>>,
     address: Address,

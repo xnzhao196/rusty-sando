@@ -131,7 +131,7 @@ async fn main() -> Result<()> {
             .await
             .unwrap();
 
-        // bot.run().await.unwrap();
+        bot.run().await.unwrap();
         log::error!("Websocket disconnected");
     }
 }

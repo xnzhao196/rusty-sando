@@ -141,7 +141,7 @@ pub async fn sync_dex(
             Err(join_error) => return Err(PairSyncError::JoinError(join_error)),
         }
     }
-    log::info!("aggregated_pools {:?}", aggregated_pools);
+    // log::info!("aggregated_pools {:?}", aggregated_pools);
     // return the populated aggregated pools vec
     Ok(aggregated_pools)
 }
